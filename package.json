@@ -1,0 +1,18 @@
+{
+    "author": "Chad Wintzer <cwintzer@gmail.com>",
+    "name": "s3policy",
+    "description": "S3 Upload/Download Policy Generator for Node.js",
+    "version": "0.0.1",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/cwintzer/s3policy"
+    },
+    "main": "./main",
+    "keywords": [
+        "s3", "aws", "amazon"
+    ],
+    "license": "MIT",
+    "engines": {
+        "node": ">=0.6"
+    }
+}
