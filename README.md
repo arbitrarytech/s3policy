@@ -25,7 +25,7 @@ Allowing the client browser to upload to S3 is a bit more complicated. Check out
 ````javascript
 var s3 = require('s3policy');
 var myS3Account = new s3('MYACCESSKEY', 'MYSECRETKEY');
-var url = myS3Account.writePolicy('myfile', 'mybucket', 60, 10);
+var policy = myS3Account.writePolicy('myfile', 'mybucket', 60, 10);
 ````
 
 * Website: http://www.arbitrarytech.com
