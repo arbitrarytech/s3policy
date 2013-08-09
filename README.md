@@ -29,3 +29,5 @@ var policy = myS3Account.writePolicy('myfile', 'mybucket', 60, 10);
 ````
 
 * Website: http://www.arbitrarytech.com
+
+Please note that the key is optional on the readPolicy method.  A key for the bucket only may be generated.

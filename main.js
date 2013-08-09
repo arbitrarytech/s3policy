@@ -14,7 +14,11 @@ function s3instance(accessKey, secretKey) {
         var expiration = new Date(dateObj.getTime() + duration * 1000);
         expiration = Math.round(expiration.getTime() / 1000);
 
-        var policy = 'GET\n\n\n' + expiration + '\n';
+        policy += '/' + bucket;
+        if (key){
+            policy += '/';
+            policy += key;
+        }
         policy += '/' + bucket + '/' + key;
         if (download) {
             policy += '?response-content-disposition=attachment;filename=' + encodeURIComponent(download);
@@ -23,8 +27,11 @@ function s3instance(accessKey, secretKey) {
         var signature = crypto.createHmac("sha1", this.secretKey).update(policy);
 
         var url = 'https://s3.amazonaws.com/';
-        url += bucket + '/';
-        url += key;
+        url += bucket;
+        if (key) {
+            url += '/';
+            url += key;
+        }
         url += '?AWSAccessKeyId=' + this.accessKey;
         url += '&Expires=' + expiration;
         url += '&Signature=' + encodeURIComponent(signature.digest("base64"));
