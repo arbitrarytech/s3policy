@@ -14,6 +14,7 @@ function s3instance(accessKey, secretKey) {
         var expiration = new Date(dateObj.getTime() + duration * 1000);
         expiration = Math.round(expiration.getTime() / 1000);
 
+        var policy = 'GET\n\n\n' + expiration + '\n';
         policy += '/' + bucket;
         if (key){
             policy += '/';
