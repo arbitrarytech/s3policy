@@ -1,9 +1,9 @@
-crypto = require('crypto');
-
+var crypto = require('crypto');
+var mime = require('mime');
 function s3instance(accessKey, secretKey) {
 
     if (!accessKey || !secretKey) {
-        console.log('Bad instantiation of s3policy! Go stand in the corner.\nDo the following:\nvar s3 = require(\'s3policy\')\nvar myBucket = new s3(\'ABCDEFG123456\', \'HFSFGA9S8H997786AS8545ASF90SDF0UA\')')
+        console.log('Bad instantiation of s3policy! Go stand in the corner.\nDo the following:\nvar s3 = require(\'s3policy\')\nvar myBucket = new s3(\'ABCDEFG123456\', \'HFSFGA9S8H997786AS8545ASF90SDF0UA\')');
     }
 
     this.accessKey = accessKey;
@@ -38,17 +38,17 @@ function s3instance(accessKey, secretKey) {
         }
     };
 
-    this.writePolicy = function(key, bucket, duration, filesize, cb) {
+    this.writePolicy = function(key, bucket, duration, filesize, acl, cb) {
         var dateObj = new Date;
         var dateExp = new Date(dateObj.getTime() + duration * 1000);
         var policy = {
             "expiration":dateExp.getUTCFullYear() + "-" + dateExp.getUTCMonth() + 1 + "-" + dateExp.getUTCDate() + "T" + dateExp.getUTCHours() + ":" + dateExp.getUTCMinutes() + ":" + dateExp.getUTCSeconds() + "Z",
             "conditions":[
                 { "bucket":bucket },
-                ["eq", "$key", key],
-                { "acl":"private" },
+                ["starts-with","$key","uploads/"],
+                { "acl":acl },
                 ["content-length-range", 0, filesize * 1000000],
-                ["starts-with", "$Content-Type", ""]
+                ["starts-with","$Content-Type",""]
             ]
         };
 
@@ -56,10 +56,12 @@ function s3instance(accessKey, secretKey) {
         var policyBase64 = new Buffer(policyString).toString('base64');
         var signature = crypto.createHmac("sha1", this.secretKey).update(policyBase64);
         var accessKey = this.accessKey;
-        s3Credentials = {
+        var s3Credentials = {
             s3PolicyBase64:policyBase64,
             s3Signature:signature.digest("base64"),
-            s3Key:accessKey
+            s3Key:accessKey,
+            acl:acl,
+            mine:mime.lookup(key)
         };
         if (cb) {
             cb(s3Credentials);

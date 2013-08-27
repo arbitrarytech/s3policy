@@ -25,7 +25,53 @@ Allowing the client browser to upload to S3 is a bit more complicated. Check out
 ````javascript
 var s3 = require('s3policy');
 var myS3Account = new s3('MYACCESSKEY', 'MYSECRETKEY');
-var policy = myS3Account.writePolicy('myfile', 'mybucket', 60, 10);
+var policy = myS3Account.writePolicy('myfile', 'mybucket', 60, 10, 'public-read', callback);
 ````
 
+HTML form
+````html
+<form id="myForm" action="https://[bucket-name].s3.amazonaws.com/" method="post" enctype="multipart/form-data">
+    <input type="hidden" id="key" name="key" value="uploads/${filename}">
+    <input type="hidden" id="acl" name="acl" value="YOUR_ACL_OPTION">
+    <input type="hidden" id="AWSAccessKeyId" name="AWSAccessKeyId" value="YOUR_AWS_ACCESS_KEY"> 
+    <input type="hidden" id="policy" name="policy" value="YOUR_POLICY_DOCUMENT_BASE64_ENCODED">
+    <input type="hidden" id="signature" name="signature" value="YOUR_CALCULATED_SIGNATURE">
+    <input type="hidden" name="Content-Type" value="MIME_TYPE">
+    <input name="file" id="file" type="file"> 
+<input id="btn_submit" class="btn btn-warning" type="submit" value="Upload File to S3"> 
+</form>
+````
+
+Client-side scripts
+````javascript
+function handleRes(res,req,err) {
+        $("#AWSAccessKeyId").val(res.s3Key);
+        $("#policy").val(res.s3PolicyBase64);
+        $("#signature").val(res.s3Signature);
+        $("#acl").val(res.acl);
+        $("#mime").val(res.mime);
+        $("#myForm").submit();
+}
+$( document ).ready(function() {
+        $( "#btn_submit" ).bind( "click", requestCredentials );
+        console.log( "ready!" );
+});
+
+
+var requestCredentials = function(event) { 
+    event.preventDefault(); // intercept and override the submit button 
+    var _file;
+
+    _file = $("#file").val().replace(/.+[\\\/]/, "");
+
+    $.ajax({ // example of a simple ajax request
+        url: "http://localhost:4000/" + _file,
+        success: handleRes,
+        error: function(res, status, error) {
+            console.log(error)
+        }
+    });
+}
+````
 * Website: http://www.arbitrarytech.com
+* Reference: http://blog.tcs.de/post-file-to-s3-using-node
