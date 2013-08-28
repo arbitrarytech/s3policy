@@ -5,7 +5,7 @@ S3 Upload/Download Policy Generator for Node.js
 
 This is a simple node.js module for easliy creating signed URLs for downloading resources directly from Amazon S3 as well as creating the necessary data for doing file uploads directly to S3. The great thing about using these methods is that file download/uploaded happen between the client and S3, your applications servers don't have to burdened with the traffic. This is all done while still keeping it highly secure.
 
-This module is available via npm by running ````npm install s3policy````
+This module is available via npm by running ````npm install s3policy-acl````
 
 In order to use this module, you will first need to have an AWS account and an IAM user with the necessary access to the read/write the files you want to create links for.
 
