@@ -11,6 +11,9 @@
     "keywords": [
         "s3", "aws", "amazon"
     ],
+    "dependencies" : {
+        "mime": "1.2.x"
+    },
     "license": "MIT",
     "engines": {
         "node": ">=0.6"
