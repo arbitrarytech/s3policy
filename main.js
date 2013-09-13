@@ -14,10 +14,14 @@ function s3instance(accessKey, secretKey) {
         var expiration = new Date(dateObj.getTime() + duration * 1000);
         expiration = Math.round(expiration.getTime() / 1000);
 
+        if(download[0] !== '"' || download[download.length-1] !== '"') {
+            download = '"' + download + '"';
+        }
+
         var policy = 'GET\n\n\n' + expiration + '\n';
         policy += '/' + bucket + '/' + key;
         if (download) {
-            policy += '?response-content-disposition=attachment;filename=' + encodeURIComponent(download);
+            policy += '?response-content-disposition=attachment;filename=' + download;
         }
 
         var signature = crypto.createHmac("sha1", this.secretKey).update(policy);
