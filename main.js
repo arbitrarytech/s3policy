@@ -42,7 +42,7 @@ function s3instance(accessKey, secretKey) {
         var dateObj = new Date;
         var dateExp = new Date(dateObj.getTime() + duration * 1000);
         var policy = {
-            "expiration":dateExp.getUTCFullYear() + "-" + dateExp.getUTCMonth() + 1 + "-" + dateExp.getUTCDate() + "T" + dateExp.getUTCHours() + ":" + dateExp.getUTCMinutes() + ":" + dateExp.getUTCSeconds() + "Z",
+            "expiration":dateExp.getUTCFullYear() + "-" + (dateExp.getUTCMonth() + 1) + "-" + dateExp.getUTCDate() + "T" + dateExp.getUTCHours() + ":" + dateExp.getUTCMinutes() + ":" + dateExp.getUTCSeconds() + "Z",
             "conditions":[
                 { "bucket":bucket },
                 ["eq", "$key", key],
