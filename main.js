@@ -9,20 +9,25 @@ function s3instance(accessKey, secretKey) {
     this.accessKey = accessKey;
     this.secretKey = secretKey;
 
-    this.readPolicy = function(key, bucket, duration, download, cb) {
+    this.readPolicy = function(key, bucket, duration, download, regionDomain) {
         var dateObj = new Date;
         var expiration = new Date(dateObj.getTime() + duration * 1000);
         expiration = Math.round(expiration.getTime() / 1000);
+	regionDomain = regionDomain || 's3';
 
+        
         var policy = 'GET\n\n\n' + expiration + '\n';
         policy += '/' + bucket + '/' + key;
         if (download) {
-            policy += '?response-content-disposition=attachment;filename=' + encodeURIComponent(download);
+            if(download[0] !== '"' || download[download.length-1] !== '"') {
+                download = '"' + download + '"';
+            }
+            policy += '?response-content-disposition=attachment;filename=' + download;
         }
 
         var signature = crypto.createHmac("sha1", this.secretKey).update(policy);
 
-        var url = 'https://s3.amazonaws.com/';
+        var url = 'https://'+regionDomain+'.amazonaws.com/';
         url += bucket + '/';
         url += key;
         url += '?AWSAccessKeyId=' + this.accessKey;
@@ -31,14 +36,10 @@ function s3instance(accessKey, secretKey) {
         if (download) {
             url += '&response-content-disposition=attachment;filename=' + encodeURIComponent(download);
         }
-        if (cb) {
-            cb(null, url);
-        } else {
-            return url;
-        }
+        return url;
     };
 
-    this.writePolicy = function(key, bucket, duration, filesize, cb) {
+    this.writePolicy = function(key, bucket, duration, filesize, useEncryption) {
         var dateObj = new Date;
         var dateExp = new Date(dateObj.getTime() + duration * 1000);
         var policy = {
@@ -52,6 +53,10 @@ function s3instance(accessKey, secretKey) {
             ]
         };
 
+        if(useEncryption) { 
+            policy.conditions.push({ 'x-amz-server-side-encryption': 'AES256' }); 
+        }
+
         var policyString = JSON.stringify(policy);
         var policyBase64 = new Buffer(policyString).toString('base64');
         var signature = crypto.createHmac("sha1", this.secretKey).update(policyBase64);
@@ -61,11 +66,8 @@ function s3instance(accessKey, secretKey) {
             s3Signature:signature.digest("base64"),
             s3Key:accessKey
         };
-        if (cb) {
-            cb(s3Credentials);
-        } else {
-            return s3Credentials;
-        }
+
+        return s3Credentials;
     };
 
 }
